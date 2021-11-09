@@ -1,0 +1,9 @@
+.main {
+  border:1px solid black;
+  display: flex;
+  justify-content: center;
+}
+
+.chart{
+  border: 1px solid rebeccapurple;
+}
