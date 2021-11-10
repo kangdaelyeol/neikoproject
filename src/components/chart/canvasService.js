@@ -67,15 +67,16 @@ const drawElement = (ticks) => {
     drawCircle({
       x: p.x,
       y: p.y,
-      radius: ELEMENT_RADIUS
-    }, "#9D9E9F");
+      radius: ELEMENT_RADIUS,
+      color: "9D9E9F"
+    });
   })
 }
 
 const extractTickValue = () => {
   const prices = [];
   const TICK_COUNT = 4;
-  const ticks = [];
+  const newTicks = [];
   Object.keys(fetchData).forEach( key => {
     prices.push(fetchData[key].price);
   })
@@ -94,14 +95,14 @@ const extractTickValue = () => {
   const minTick = floorNumber(minprice);
   const priceInterval = (maxTick - minTick) / TICK_COUNT;
   for(let i=0; i<5; i++){
-    ticks.push(String(minTick + priceInterval * i));
+    newTicks.push(String(minTick + priceInterval * i));
   }
-  return ticks;
+  return newTicks;
 }
 
 
 
-const drawTicks = (ticks) => {
+const drawTickValues = (ticks) => {
   const tickInterval = CHART.fillHeight / 4;
   const textIntervalX = 2;
   const textIntervalY = 3;
@@ -131,8 +132,9 @@ const drawTickLines = () => {
       lineX: CHART.fillX + CHART.fillWidth,
       lineY: CHART.fillY + tickInterval * i,
       lineWidth: 1,
-      strokeStyle: "black"
-    },dash)
+      strokeStyle: "black",
+      dash
+    })
   }
 }
 
@@ -140,41 +142,17 @@ const drawTickLines = () => {
 class canvasService {
   constructor(canvas) {
     const ticks = extractTickValue();
-    // drawTicks(ticks);
     ctx = canvas.getContext('2d');
-
-    canvas.addEventListener('click', (e) => this.canvasClick(e));
+    canvas.addEventListener('click', this.canvasClick);
     canvas.addEventListener('mousemove', this.canvasMove);
-    drawRect({
-      x: CHART.fillX,
-      y: CHART.fillY,
-      width: CHART.fillWidth,
-      height: CHART.fillHeight
-    });
-    drawTicks(ticks);
+    drawTickValues(ticks);
     drawElement(ticks);
-
     drawTickLines();
-    ctx.save();
-    // elements.forEach(e => {
-    //   if(e.kind === "circle"){
-    //     setInterval(() => {
-    //       e.element.arc(e.x + num, e.y + num, e.radius, 0, Math.PI * 2);
-    //       ctx.restore();
-    //       ctx.fill(e.element);
-    //       num++;
-    //     }, 50);
-    //   }
-    // })
   }
-
   canvasClick = (e) => {
     const x = e.offsetX;
     const y = e.offsetY;
     const radius = 30;
-    drawLine([10, 10, 20, 100]);
-
-
     this.checkIndex(x, y);
   };
 
@@ -225,26 +203,26 @@ const drawText = (option) => {
   ctx.restore();
 }
 
-// option - moveX/Y, lineX/Y, strokeStyle, lineWidth
-const drawLine = (option, dash) => {
+// option - moveX/Y, lineX/Y, strokeStyle, lineWidth, dash
+const drawLine = (option) => {
   ctx.save();
   ctx.beginPath();
   ctx.lineWidth = option.lineWidth;
   ctx.moveTo(option.moveX, option.moveY);
   ctx.lineTo(option.lineX, option.lineY);
   ctx.strokeStyle = option.strokeStyle;
-  if(dash) ctx.setLineDash([5, 5]);
+  if(option.dash) ctx.setLineDash([5, 5]);
   ctx.stroke();
   ctx.restore();
 };
 
-// drawCircle -> option[x, y, radius]
-const drawCircle = (option, color) => {
+// option - x ,y radius, color
+const drawCircle = (option) => {
   ctx.save();
   ctx.beginPath();
   const circle = new Path2D();
   circle.arc(option.x, option.y, option.radius, 0, Math.PI * 2);
-  ctx.fillStyle = color;
+  ctx.fillStyle = option.color;
   ctx.fill(circle);
   
   // 이벤트 추가를 위한 식별자 생성
