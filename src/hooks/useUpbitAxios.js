@@ -42,13 +42,9 @@ const useUpbitAxios = (option, upbitOption) => {
             .then((response) => {
               data = response.data;
               result = [...result, ...data];
-              // console.log(result);
               if (data.length === 200) {
-                console.log("recursive");
-                console.log(data.length);
                 recursiveAxios();
               } else {
-                console.log("recursive else");
                 setAllResult([...result]);
                 setLoading(false);
               }
@@ -56,11 +52,9 @@ const useUpbitAxios = (option, upbitOption) => {
             .catch(console.log);
         };
         if (data.length === 200){
-          console.log("axiosConsole");
           recursiveAxios();
         }
         else {
-          console.log("axios else");
           setAllResult([...result]);
           setLoading(false);
         }
