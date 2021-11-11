@@ -24,8 +24,6 @@ export const simpleInterest = (investment, beforeStockValue, currentStockValue) 
 //           writer: 강대렬
 export const compoundInterest = (startInvestment, intervalInvestment, investDate) => {
     const result = {};
-    
-
     return result;
 }
 

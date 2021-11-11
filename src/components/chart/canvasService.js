@@ -1,6 +1,4 @@
 let id = 0;
-let ctx = null;
-let num = 0;
 const ELEMENT_RADIUS = 10;
 
 const elements = [];
@@ -142,13 +140,24 @@ const drawTickLines = () => {
 class canvasService {
   constructor(canvas) {
     const ticks = extractTickValue();
-    ctx = canvas.getContext('2d');
+    this.ctx = canvas.getContext('2d');
     canvas.addEventListener('click', this.canvasClick);
     canvas.addEventListener('mousemove', this.canvasMove);
     drawTickValues(ticks);
     drawElement(ticks);
     drawTickLines();
   }
+  ctx = null;
+  fetchData = null;
+
+
+  // main canvas init aciton
+  // data - upbitData(5), option: single / compound interest
+  drawCanvas = (data) => {
+
+  }
+  
+  
   canvasClick = (e) => {
     const x = e.offsetX;
     const y = e.offsetY;
@@ -163,67 +172,67 @@ class canvasService {
 
   checkIndex = (x, y) => {
     elements.forEach((e) => {
-      if (ctx.isPointInPath(e.element, x, y)) {
-        ctx.save();
+      if (this.ctx.isPointInPath(e.element, x, y)) {
+        this.ctx.save();
         setTimeout(() => {
-          ctx.save();
-          ctx.fill(e.element);
-          ctx.restore()
+          this.ctx.save();
+          this.ctx.fill(e.element);
+          this.ctx.restore()
         }, 200);
 
-        ctx.fillStyle="blue";
-        ctx.fill(e.element);
+        this.ctx.fillStyle="blue";
+        this.ctx.fill(e.element);
         console.log(e.x, e.y);
       } else{
-        ctx.fillStyle="#9D9E9F";
-        ctx.fill(e.element);
+        this.ctx.fillStyle="#9D9E9F";
+        this.ctx.fill(e.element);
       }
     });
-    ctx.restore();
+    this.ctx.restore();
   };
 }
 
 const drawRect = (option) => {
-  ctx.save();
+  this.ctx.save();
   const rect = new Path2D();
   rect.rect(option.x, option.y, option.width, option.height);
-  ctx.fillStyle = "wheat";
-  ctx.fill(rect);
-  ctx.restore();
+  this.ctx.fillStyle = "wheat";
+  this.ctx.fill(rect);
+  this.ctx.restore();
 }
 
 
 // option - x, y, textAlign, fontSize, fontFamily, text : Object
 const drawText = (option) => {
-  ctx.save();
-  ctx.font = `${option.fontSize} ${option.fontFamily}`;
-  ctx.strokeStyle = "black";
-  ctx.textAlign = option.textAlign;
-  ctx.strokeText(option.text, option.x, option.y);
-  ctx.restore();
+  this.ctx.save();
+  this.ctx.font = `${option.fontSize} ${option.fontFamily}`;
+  this.ctx.strokeStyle = "black";
+  this.ctx.textAlign = option.textAlign;
+  this.ctx.strokeText(option.text, option.x, option.y);
+  this.ctx.restore();
 }
 
 // option - moveX/Y, lineX/Y, strokeStyle, lineWidth, dash
 const drawLine = (option) => {
-  ctx.save();
-  ctx.beginPath();
-  ctx.lineWidth = option.lineWidth;
-  ctx.moveTo(option.moveX, option.moveY);
-  ctx.lineTo(option.lineX, option.lineY);
-  ctx.strokeStyle = option.strokeStyle;
-  if(option.dash) ctx.setLineDash([5, 5]);
-  ctx.stroke();
-  ctx.restore();
+  this.ctx.save();
+  this.ctx.beginPath();
+  this.ctx.lineWidth = option.lineWidth;
+  this.ctx.moveTo(option.moveX, option.moveY);
+  this.ctx.lineTo(option.lineX, option.lineY);
+  this.ctx.strokeStyle = option.strokeStyle;
+  if(option.dash) this.ctx.setLineDash([5, 5]);
+  this.ctx.stroke();
+  this.ctx.restore();
 };
 
 // option - x ,y radius, color
 const drawCircle = (option) => {
-  ctx.save();
-  ctx.beginPath();
+  this.ctx.save();
+  this.ctx.beginPath();
   const circle = new Path2D();
   circle.arc(option.x, option.y, option.radius, 0, Math.PI * 2);
-  ctx.fillStyle = option.color;
-  ctx.fill(circle);
+  this.ctx.fillStyle = option.color;
+  this.ctx.fill(circle);
   
   // 이벤트 추가를 위한 식별자 생성
   const element = {
@@ -237,7 +246,7 @@ const drawCircle = (option) => {
   id++;
   elements.push(element);
 
-  ctx.restore();
+  this.ctx.restore();
 };
 
 // 값을 받아 해당 최대 자리수 까지 올림 내림 하는 기능
