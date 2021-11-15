@@ -13,9 +13,13 @@ import axios from 'axios';
 const useUpbitAxios = (option, upbitOption) => {
   // 받은 upbitOption으로 요청할 url 생성
   const [allResult, setAllResult] = useState(null);
-  const [trigger, setTrigger] = useState(Date.now());
+  const [trigger, setTrigger] = useState(null);
   const [isLoading, setLoading] = useState(false);
   const url = `https://api.upbit.com/v1/candles/${upbitOption.date}?market=${upbitOption.stock}&count=200`;
+
+  const reAxios = () => {
+    setTrigger(Date.now());
+  };
 
   useEffect(() => {
     option.url = url;
@@ -41,8 +45,10 @@ const useUpbitAxios = (option, upbitOption) => {
           axios(newOption)
             .then((response) => {
               data = response.data;
+              console.log(data);
               result = [...result, ...data];
               if (data.length === 200) {
+                console.log(result);
                 recursiveAxios();
               } else {
                 setAllResult([...result]);
@@ -67,10 +73,7 @@ const useUpbitAxios = (option, upbitOption) => {
     // end Axios
   }, [trigger]);
 
-  const reAxios = () => {
-    setTrigger(Date.now());
-  };
-
+ console.log(allResult);
   return { allResult, isLoading, reAxios };
 };
 

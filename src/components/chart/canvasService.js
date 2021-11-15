@@ -16,35 +16,8 @@ const CANVAS_WIDTH = 1000;
 const CANVAS_HEIGHT = 600;
 const CANVAS_PADDING = 10;
 
-const fetchData = {
-  1 : {
-    id : 1,
-    date: "11/01",
-    price: 12345000
-  },
-  2 : {
-    id : 2,
-    date: "11/03",
-    price: 8765000
-  },
-  3 : {
-    id : 3,
-    date: "11/05",
-    price: 32429000
-  },
-  4 : {
-    id : 4,
-    date: "11/07",
-    price: 2564000
-  },
-  5 : {
-    id : 5,
-    date: "11/09",
-    price: 6405000
-  },
-}
 
-const drawElement = (ticks) => {
+const drawElements = (ticks, fetchData) => {
   const elementPositions = [];
   const tickInterval = Number(ticks[4]) - Number(ticks[0]);
   const minTick = Number(ticks[0]);
@@ -71,12 +44,12 @@ const drawElement = (ticks) => {
   })
 }
 
-const extractTickValue = () => {
+const extractTickValue = (drawData) => {
   const prices = [];
   const TICK_COUNT = 4;
   const newTicks = [];
-  Object.keys(fetchData).forEach( key => {
-    prices.push(fetchData[key].price);
+  Object.keys(drawData).forEach( key => {
+    prices.push(drawData[key].price);
   })
   let minprice = prices[0];
   let maxprice = prices[0];
@@ -138,24 +111,44 @@ const drawTickLines = () => {
 
 
 class canvasService {
-  constructor(canvas) {
-    const ticks = extractTickValue();
+  constructor(canvas, fetchData) {
+    console.log(fetchData);
+    this.fetchData = fetchData;
+    this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
-    canvas.addEventListener('click', this.canvasClick);
-    canvas.addEventListener('mousemove', this.canvasMove);
-    drawTickValues(ticks);
-    drawElement(ticks);
-    drawTickLines();
-  }
-  ctx = null;
-  fetchData = null;
-
-
+  } 
+  
   // main canvas init aciton
   // data - upbitData(5), option: single / compound interest
-  drawCanvas = (data) => {
+  drawCanvas = (index, option) => {
+    // 데이터 인덱스 추출
+    console.log(this.fetchData)
+    const drawData = [];
+    let ticks = null;
+    for(let i=index; i<index + 5; i++){
+      drawData.push(this.fetchData[i]);
+    }
 
+    drawTickLines();
+    switch(option){
+      case "single":
+        ticks = extractTickValue(drawData);
+        drawTickValues(ticks);
+        drawElements(ticks, drawData);
+      default:
+        throw new Error("drawCanvas option type error")
+    }
   }
+
+  addMousemoveListener = (func) => {
+    func && this.canvas.addEventListener("mousemove", func)
+  }
+
+  addClickListener = (func) =>{
+    func && this.canvas.addEventListener("click", func);
+  }
+
+
   
   
   canvasClick = (e) => {
