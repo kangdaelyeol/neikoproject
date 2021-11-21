@@ -43,6 +43,7 @@ class canvasService {
       drawData.push(this.fetchData[i]);
     }
     // console.log(drawData);
+    drawData.reverse();
 
     this.drawTickLines();
 
@@ -55,6 +56,8 @@ class canvasService {
       default:
         throw new Error("drawCanvas option type error")
     }
+
+
     this.drawDate(drawData);
   }
 
@@ -100,10 +103,26 @@ class canvasService {
   };
 
   drawDate = (drawData) => {
-    drawData.forEach( e => {
-      console.log(e.date);
+    const revisedFillWidth = CHART.fillWidth - this.elementRadius * 2;
+    const revisedFillX = CHART.fillX + this.elementRadius;
+    const drawIntervalX = revisedFillWidth / 4;
+
+
+
+    drawData.forEach( (e, idx) => {
+      console.log(e.date, drawIntervalX * idx);
   // option - x, y, textAlign, fontSize, fontFamily, text : Object
-    })
+      drawText({
+        x: revisedFillX + drawIntervalX * idx,
+        y: CHART.fillY + CHART.fillHeight,
+        textAlign: "center",
+        fontSize: "12px",
+        text: e.date,
+        fontFamily: "saris",
+        baseLine: "hanging"
+      }, this.ctx);
+
+    });
   }
 
   drawElements = (ticks, fetchData, elements) => {
@@ -159,7 +178,8 @@ class canvasService {
         fontFamily: "serif",
         fontSize: "10px",
         textAlign:"right",
-        text: ticks[i]
+        text: ticks[i],
+        baseLine: "hanging"
       }, this.ctx);
     }
   }
@@ -347,6 +367,7 @@ const drawText = (option, ctx) => {
   ctx.font = `${option.fontSize} ${option.fontFamily}`;
   ctx.strokeStyle = "black";
   ctx.textAlign = option.textAlign;
+  if(option.baseLine) ctx.textBaseline = option.baseLine;
   ctx.strokeText(option.text, option.x, option.y);
   ctx.restore();
 }
