@@ -14,42 +14,48 @@ const CHART = Object.freeze({
 const CANVAS_WIDTH = 1000;
 const CANVAS_HEIGHT = 600;
 const CANVAS_PADDING = 10;
+
+
 class canvasService {
   constructor(canvas, fetchData) {
-    console.log(fetchData);
+    // console.log(fetchData);
     this.id = 0;
     this.elements = [];
     this.fetchData = fetchData;
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
+    this.elementRadius = 10;
+    this.Dev_LineConstruction();
   } 
   
   clearCanvas = () => {
     this.ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
   }
+
   // main canvas init aciton
   // data - upbitData(5), option: single / compound interest
   drawCanvas = (index, option) => {
     // 데이터 인덱스 추출
-    console.log(this.fetchData);
+    // console.log(this.fetchData);
     const drawData = [];
     let ticks = null;
     for(let i=index; i<index + 5; i++){
       drawData.push(this.fetchData[i]);
     }
-    console.log(drawData);
+    // console.log(drawData);
 
-    drawTickLines(this.ctx);
+    this.drawTickLines();
 
     switch(option){
       case "single":
         ticks = extractTickValue(drawData);
-        drawTickValues(ticks, this.ctx);
-        drawElements(ticks, drawData, this.ctx, this.elements);
+        this.drawTickValues(ticks, this.ctx);
+        this.drawElements(ticks, drawData, this.elements);
         break;
       default:
         throw new Error("drawCanvas option type error")
     }
+    this.drawDate(drawData);
   }
 
   addMousemoveListener = (func) => {
@@ -92,6 +98,133 @@ class canvasService {
     });
     this.ctx.restore();
   };
+
+  drawDate = (drawData) => {
+    drawData.forEach( e => {
+      console.log(e.date);
+  // option - x, y, textAlign, fontSize, fontFamily, text : Object
+    })
+  }
+
+  drawElements = (ticks, fetchData, elements) => {
+    // revise FillX Range for element_Radius
+    const revisedFillWidth = CHART.fillWidth - this.elementRadius * 2;
+    const revisedFillX = CHART.fillX + this.elementRadius;
+    console.log(revisedFillWidth, revisedFillX);
+
+    const elementPositions = [];
+    const tickInterval = Number(ticks[4]) - Number(ticks[0]);
+    const minTick = Number(ticks[0]);
+    const chartIntervalX = revisedFillWidth / 4;
+    Object.keys(fetchData).forEach((i, idx) => {
+      const absolutePrice = fetchData[i].price;
+      const relativePrice = absolutePrice - minTick;
+      const elementPositionX = revisedFillX + chartIntervalX * (idx);
+      const elementPositionY = CHART.fillY + CHART.fillHeight - Math.floor(relativePrice / tickInterval * CHART.fillHeight);
+      const elementPosition = {
+        x: elementPositionX,
+        y: elementPositionY,
+        price: absolutePrice
+      };
+      elementPositions.push(elementPosition);
+    });
+    // console.log(elementPositions);
+    elementPositions.forEach(p => {
+      drawCircle({
+        x: p.x,
+        y: p.y,
+        radius: this.elementRadius,
+        color: "9D9E9F"
+      }, this.ctx, elements);
+  
+      // option - x, y, textAlign, fontSize, fontFamily, text : Object
+      drawText({
+        x: p.x,
+        y: p.y + ELEMENT_RADIUS * 2,
+        textAlign :"center",
+        fontSize :"12px",
+        fontFamily: "saris",
+        text: p.price
+      }, this.ctx);
+    });
+  }
+  drawTickValues = (ticks) => {
+    const tickInterval = CHART.fillHeight / 4;
+    const textIntervalX = 2;
+    const textIntervalY = 3;
+    for(let i=0; i<5; i++){
+      drawText({
+        x: CHART.fillX - textIntervalX,
+        y: CHART.fillY + CHART.fillHeight - tickInterval * i + textIntervalY,
+        fontFamily: "serif",
+        fontSize: "10px",
+        textAlign:"right",
+        text: ticks[i]
+      }, this.ctx);
+    }
+  }
+
+  drawTickLines = () => {
+    const tickInterval = CHART.fillHeight / 4;
+    for(let i=0; i<5; i++){
+      let dash = null;
+      if(i === 0 || i === 4) 
+        dash = false;
+      else
+         dash = true;
+      drawLine({
+        moveX: CHART.fillX,
+        moveY: CHART.fillY + tickInterval * i,
+        lineX: CHART.fillX + CHART.fillWidth,
+        lineY: CHART.fillY + tickInterval * i,
+        lineWidth: 1,
+        strokeStyle: "black",
+        dash
+      }, this.ctx);
+    }
+  }
+
+
+  // Dev function
+  Dev_LineConstruction = () => {
+  // option - moveX/Y, lineX/Y, strokeStyle, lineWidth, dash
+    drawLine({ // FillY
+      moveX: CHART.fillX,
+      moveY: 0,
+      lineX: CHART.fillX,
+      lineY: CHART.fillY,
+      lineWidth:5,
+    }, this.ctx);
+
+    drawLine({ // FillX
+      moveX: 0,
+      moveY: CHART.fillY,
+      lineX: CHART.fillX,
+      lineY: CHART.fillY,
+      lineWidth:5,
+    }, this.ctx);
+
+    drawLine({ // FillX -> FIllwidth
+      moveX: CHART.fillX,
+      moveY: CHART.fillY,
+      lineX: CHART.fillX + CHART.fillWidth,
+      lineY: CHART.fillY,
+      lineWidth:5,
+      strokeStyle: "red"
+    }, this.ctx);
+
+
+    drawLine({ // FillY -> FIllheight
+      moveX: CHART.fillX,
+      moveY: CHART.fillY,
+      lineX: CHART.fillX,
+      lineY: CHART.fillY + CHART.fillHeight,
+      lineWidth:5,
+      strokeStyle: "red"
+    }, this.ctx);
+
+
+  }
 }
 // end define Class
 
@@ -122,32 +255,7 @@ const drawCircle = (option, ctx, elements) => {
 };
 
 
-const drawElements = (ticks, fetchData, ctx, elements) => {
-  const elementPositions = [];
-  const tickInterval = Number(ticks[4]) - Number(ticks[0]);
-  const minTick = Number(ticks[0]);
-  const chartIntervalX = CHART.width / 4;
-  Object.keys(fetchData).forEach(i => {
-    const absolutePrice = fetchData[i].price;
-    const relativePrice = absolutePrice - minTick;
-    const elementPositionX = CHART.x + chartIntervalX * (i-1);
-    const elementPositionY = Math.floor(relativePrice / tickInterval * CHART.height);
-    const elementPosition = {
-      x: elementPositionX + CHART.x,
-      y: elementPositionY + CHART.y
-    };
-    elementPositions.push(elementPosition);
-  });
-  console.log(elementPositions);
-  elementPositions.forEach(p => {
-    drawCircle({
-      x: p.x,
-      y: p.y,
-      radius: ELEMENT_RADIUS,
-      color: "9D9E9F"
-    }, ctx, elements);
-  });
-}
+
 
 // 값을 받아 해당 최대 자리수 까지 올림 내림 하는 기능
 const ceilNumber = (num) => {
@@ -166,6 +274,14 @@ const floorNumber = (num) => {
   return result;
 }
 
+
+// function name: extractTickValue
+// function explain: 데이터의 price정보 5개를 받아 라인의 VALUE를 
+//                    적절하게 계산하여 리턴
+// input: drawData: Object(5)
+// output: tickValues: Array[5]
+// writer: 강대렬
+// writing Date: 2021/11/21
 const extractTickValue = (drawData) => {
   console.log(drawData);
   const prices = [];
@@ -196,21 +312,7 @@ const extractTickValue = (drawData) => {
 
 
 
-const drawTickValues = (ticks, ctx) => {
-  const tickInterval = CHART.fillHeight / 4;
-  const textIntervalX = 2;
-  const textIntervalY = 3;
-  for(let i=0; i<5; i++){
-    drawText({
-      x: CHART.fillX - textIntervalX,
-      y: CHART.fillY + CHART.fillHeight - tickInterval * i + textIntervalY,
-      fontFamily: "serif",
-      fontSize: "10px",
-      textAlign:"right",
-      text: ticks[i]
-    }, ctx);
-  }
-}
+
 
 // option - moveX/Y, lineX/Y, strokeStyle, lineWidth, dash
 const drawLine = (option, ctx) => {
@@ -225,25 +327,7 @@ const drawLine = (option, ctx) => {
   ctx.restore();
 };
 
-const drawTickLines = (ctx) => {
-  const tickInterval = CHART.fillHeight / 4;
-  for(let i=0; i<5; i++){
-    let dash = null;
-    if(i === 0 || i === 4) 
-      dash = false;
-    else
-       dash = true;
-    drawLine({
-      moveX: CHART.fillX,
-      moveY: CHART.fillY + tickInterval * i,
-      lineX: CHART.fillX + CHART.fillWidth,
-      lineY: CHART.fillY + tickInterval * i,
-      lineWidth: 1,
-      strokeStyle: "black",
-      dash
-    }, ctx);
-  }
-}
+
 
 
 
