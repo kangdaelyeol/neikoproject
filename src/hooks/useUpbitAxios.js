@@ -7,19 +7,40 @@ import axios from 'axios';
 //           output: canvasDatas: Object(id, price, data)
 //     writing date: 2021/11/11
 //           writer: 강대렬
-const factoringForCanvasData = (upbitData) => {
+const factoringForCanvasData = (upbitData, options) => {
   const canvasDatas = {};
+  // date 겹침 -> investDate로 투자한 날짜 변경
+  const { date: investDate , investOption, investValue, intervalInvest, intervalDate } = options;
+
   upbitData.forEach((item, idx) => {
     const date = item.candle_date_time_utc.substr(2, 8);
     const price = item.trade_price;
     canvasDatas[idx + 1] = {
-      id: idx + 1,
-      price,
-      date
+      id: idx + 1, // id
+      price, // current price (현재 코인 가격)
+      date, // current date (현재 날짜)
+      // my investment value (내 투자 금액)
+      // earning ratio (수익률)
+    };
+    const drawOption = {
+      investDate,
+      investValue,
+      intervalInvest,
+      intervalDate,
+    };
+
+    if (investOption === 'compound') {
+      // 복리 옵션일 경우 
+    } else {
+      // 단리 옵션일 경우
     }
   });
-  return canvasDatas;  
-}
+
+  // 데이터 가공 -> simple / compound option 정보 가공 수행
+
+  // canvas에게 그리는 데이터 전달.
+  return canvasDatas;
+};
 
 // function name: useUpbitAxios
 // function explain: upbit는 데이터를 200개까지만 반환하는 한계가 있어
@@ -31,14 +52,13 @@ const factoringForCanvasData = (upbitData) => {
 //     writing date: 2021/11/11
 //           writer: 강대렬
 
-
 const useUpbitAxios = (option, upbitOption) => {
   // 받은 upbitOption으로 요청할 url 생성
   const [trigger, setTrigger] = useState(null);
   const [state, setState] = useState({
     data: null,
-    isLoading: true
-  })
+    isLoading: true,
+  });
   const url = `https://api.upbit.com/v1/candles/${upbitOption.date}?market=${upbitOption.stock}&count=200`;
 
   const reAxios = () => {
@@ -46,21 +66,22 @@ const useUpbitAxios = (option, upbitOption) => {
       ...state,
       data: null,
       isLoading: true,
-    })
+    });
     setTrigger(Date.now());
   };
 
   useEffect(() => {
+    if (!upbitOption) return;
     option.url = url;
     let result = [];
     let data = null;
     //Start Axios
     // setAllResult(null);
 
-    console.log("OUTSIDE AXIOS START");
+    console.log('OUTSIDE AXIOS START');
     axios(option)
       .then((response) => {
-        console.log("INSIDE AXIOS START");
+        console.log('INSIDE AXIOS START');
         data = response.data;
         result = [...data];
         let newSearchDateOption = null;
@@ -78,15 +99,18 @@ const useUpbitAxios = (option, upbitOption) => {
               // console.log(data);
               result = [...result, ...data];
               if (data.length === 200) {
-                console.log("length === 200 ->recursiveAXIOS");
+                console.log('length === 200 ->recursiveAXIOS');
                 return recursiveAxios();
               } else {
-                const factoringData = factoringForCanvasData([...result]);
-                console.log("Set All Result");
+                const factoringData = factoringForCanvasData(
+                  [...result],
+                  upbitOption,
+                );
+                console.log('Set All Result');
                 setState({
                   ...state,
                   data: factoringData,
-                  isLoading: false
+                  isLoading: false,
                 });
                 return;
               }
@@ -95,38 +119,35 @@ const useUpbitAxios = (option, upbitOption) => {
         };
         //  ------------ end definition RecurSiveAxios --------
 
-        if (data.length === 200){
-          console.log("if length === 200");
+        if (data.length === 200) {
+          console.log('if length === 200');
           return recursiveAxios();
-        }
-        else {
-          console.log("else length - 호출 ㄴㄴ");
+        } else {
+          console.log('else length - 호출 ㄴㄴ');
           const factoringData = factoringForCanvasData([...result]);
           console.log(factoringData);
           setState({
             ...state,
             data: factoringData,
-            isLoading:false
+            isLoading: false,
           });
         }
-        console.log("INSIDE AXIOS END");
+        console.log('INSIDE AXIOS END');
       }) // end recursive logic, AXIOS
       .catch((e) => {
         console.log(e.message);
         setState({
           ...state,
-          data:null,
-          isLoading:false
-        })
+          data: null,
+          isLoading: false,
+        });
       });
-      console.log("OUTSIDE AXIOS END");
+    console.log('OUTSIDE AXIOS END');
     // end Axios
   }, [trigger]);
 
-  console.log("RETURN AXIOS");
+  console.log('RETURN AXIOS');
   return { ...state, reAxios };
 };
-
-
 
 export default useUpbitAxios;
