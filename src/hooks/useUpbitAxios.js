@@ -9,6 +9,7 @@ import InvestManager from '../services/investCalculator';
 //     writing date: 2021/11/11
 //           writer: 강대렬
 
+const manager = new InvestManager();
 
 const factoringForCanvasData = (upbitData, options) => {
   const canvasDatas = {};
