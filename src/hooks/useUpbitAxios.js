@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import InvestManager from '../services/investCalculator';
 
 // function name: factoringForCanvasData
 // function explain: axios를 통해 받은 배열 데이터를 canvas에 호환되는 데이터로 만든다.
@@ -7,33 +8,22 @@ import axios from 'axios';
 //           output: canvasDatas: Object(id, price, data)
 //     writing date: 2021/11/11
 //           writer: 강대렬
+
+
 const factoringForCanvasData = (upbitData, options) => {
   const canvasDatas = {};
   // date 겹침 -> investDate로 투자한 날짜 변경
-  const { date: investDate , investOption, investValue, intervalInvest, intervalDate } = options;
 
   upbitData.forEach((item, idx) => {
     const date = item.candle_date_time_utc.substr(2, 8);
     const price = item.trade_price;
     canvasDatas[idx + 1] = {
-      id: idx + 1, // id
+      id: idx + 1, // id - latest data
       price, // current price (현재 코인 가격)
       date, // current date (현재 날짜)
       // my investment value (내 투자 금액)
       // earning ratio (수익률)
     };
-    const drawOption = {
-      investDate,
-      investValue,
-      intervalInvest,
-      intervalDate,
-    };
-
-    if (investOption === 'compound') {
-      // 복리 옵션일 경우 
-    } else {
-      // 단리 옵션일 경우
-    }
   });
 
   // 데이터 가공 -> simple / compound option 정보 가공 수행
@@ -51,6 +41,7 @@ const factoringForCanvasData = (upbitData, options) => {
 //           output: data: Response, isloading: Boolean, trigger: Function
 //     writing date: 2021/11/11
 //           writer: 강대렬
+const invManager = new InvestManager();
 
 const useUpbitAxios = (option, upbitOption) => {
   // 받은 upbitOption으로 요청할 url 생성

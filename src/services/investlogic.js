@@ -1,6 +1,6 @@
 // simple / compound interest calculate logic 
 
-import { MakeDataObj } from "./MakeDataObj";
+import { MakeDataObj } from "../components/chart/MakeDataObj";
 
 
 // function    name: simpleInterest

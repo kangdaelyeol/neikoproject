@@ -1,5 +1,5 @@
 import drawServices from './drawService';
-import { compoundInterest } from "./investlogic";
+
 const ELEMENT_RADIUS = 10;
 
 const CHART = Object.freeze({
