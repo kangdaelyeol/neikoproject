@@ -51,7 +51,7 @@ const Chart = ({canvasData, indexOption, shiftLeft, shiftRight}) => {
     const rightBtn = rightBtnRef.current;
     // temp option
     const option = 'single'
-    myCanvas.drawCanvas(indexOption.index, option);
+    myCanvas.drawCanvas(indexOption, option);
     leftBtn.addEventListener("click", onLeftClick);
     rightBtn.addEventListener("click", onRightClick);
 

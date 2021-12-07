@@ -52,14 +52,14 @@ class canvasService {
 
   // main canvas init aciton
   // data - upbitData(5), option: single / compound interest
-  drawCanvas = (index, option) => {
-    console.log(index);
+  drawCanvas = (indexOption, option) => {
+    const { index, interval } = indexOption;
+
     // 데이터 인덱스 추출
-    // console.log(this.fetchData);
     const drawData = [];
     let ticks = null;
     for (let i = index; i < index + 5; i++) {
-      drawData.push(this.fetchData[i]);
+      drawData.push(this.fetchData[i * interval]);
     }
     // console.log(drawData);
     drawData.reverse();

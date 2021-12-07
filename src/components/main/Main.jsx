@@ -1,9 +1,8 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect, useRef } from 'react';
 import Chart from '../chart/Chart';
 import useUpbitAxios from '../../hooks/useUpbitAxios';
 import Loading from '../loading/Loading';
 import { useNavigate, useLocation } from 'react-router';
-import { useEffect } from 'react/cjs/react.development';
 
 // const upbitOption = {
 //   date: "days",
@@ -19,6 +18,7 @@ const Main = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const upbitOption = location.state?.upbitOption ?? false;
+  const dateIntervalRef = useRef();
   
   const { data, isLoading, reAxios } = useUpbitAxios(options, upbitOption);
   const [indexOption, setIndex] = useState({
@@ -31,7 +31,7 @@ const Main = () => {
     }
   });
   const shiftLeft = () => {
-    if(indexOption.index + 5 > Object.keys(data).length) return true;
+    if((indexOption.index + 5) * indexOption.interval > Object.keys(data).length) return true;
     setIndex({
       ...indexOption,
     index: indexOption.index + 1
@@ -46,15 +46,29 @@ const Main = () => {
     });
   };
 
-  const onDateIntervalSet = (e) => {
-    if(e.target.nodeName !== "BUTTON") return;
-    const interval = Number(e.target.value);
-    setIndex({
-      ...indexOption,
-      interval
-    });
+  const cDateIntervalSet = () => {
+    const value = dateIntervalRef.current.value;
+    if(value <= 0) {
+      console.log(value);
+      return;
+    }
+    setInterval(Math.ceil(dateIntervalRef.current.value));
   }
 
+  const dateIntervalSet = (e) => {
+    if(e.target.nodeName !== "BUTTON") return;
+    const interval = Number(e.target.value);
+    setInterval(interval);
+  }
+
+  const setInterval = (interval) => {
+    if(1 + interval * 5 > Object.keys(data).length) return;
+    setIndex({
+      ...indexOption,
+      interval,
+      index: 1
+    });
+  }
   return (
     <div>
       <h1 className="title">result for {upbitOption.stock}</h1>
@@ -70,11 +84,13 @@ const Main = () => {
       )}
       {/* <h1>{`${data}`}</h1> */}
       <button onClick={() => reAxios()}>reAxios</button>
-      <div onClick={onDateIntervalSet} className="selectButton">
+      <div onClick={dateIntervalSet} className="selectButton">
         <button value="1">1일 간격</button>
         <button value="7">7일 간격</button>
         <button value="30">30일 간격</button>
       </div>
+        <input min='1' ref={dateIntervalRef} type="number" />
+        <button onClick={cDateIntervalSet}>일 간격</button>
     </div>
   );
 };
