@@ -4,7 +4,9 @@ import canvasService from './canvasService';
 
 
 
-const Chart = ({canvasData, index, shiftLeft, shiftRight}) => {
+const Chart = ({canvasData, indexOption, shiftLeft, shiftRight}) => {
+  const maxIndex = Object.keys(canvasData).length;
+  
   const chartRef = useRef();
   // button reference
   const leftBtnRef = useRef();
@@ -12,8 +14,9 @@ const Chart = ({canvasData, index, shiftLeft, shiftRight}) => {
  
 
   const onLeftClick = (e) => {
-    // e.preventDefault();
-    console.log("on Left click");
+    const isDisAbled = shiftLeft();
+    if(isDisAbled) return;
+
     shiftLeft();
     e.target.disabled = true;
     // await for linear ctx .25s
@@ -23,7 +26,6 @@ const Chart = ({canvasData, index, shiftLeft, shiftRight}) => {
   }
 
   const onRightClick = (e) => {
-    // e.preventDefault();
     const isDisAbled = shiftRight();
     if(isDisAbled) return;
 
@@ -35,7 +37,6 @@ const Chart = ({canvasData, index, shiftLeft, shiftRight}) => {
 
   // componentDidUpdate
   useEffect(() => {
-    console.log("useEffect -> effect", index);
     const myCanvas = new canvasService(chartRef.current, canvasData);
     
   /* 
@@ -50,18 +51,17 @@ const Chart = ({canvasData, index, shiftLeft, shiftRight}) => {
     const rightBtn = rightBtnRef.current;
     // temp option
     const option = 'single'
-    myCanvas.drawCanvas(index, option);
+    myCanvas.drawCanvas(indexOption.index, option);
     leftBtn.addEventListener("click", onLeftClick);
     rightBtn.addEventListener("click", onRightClick);
 
     // clear function
      return () => {
-      console.log("useEffect -> clear", index);
        myCanvas.clearCanvas();
        leftBtn.removeEventListener("click", onLeftClick);
        rightBtn.removeEventListener("click", onRightClick);
      }
-  }, [index]);
+  }, [indexOption]);
 
   return (
     <div className={styles.main}>

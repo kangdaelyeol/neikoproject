@@ -1,9 +1,7 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './home.module.css';
-import InvestManager, { extractDate } from '../../services/investCalculator';
-
-const M = new InvestManager();
+import { dateDiff } from '../../services/investlogic';
 
 const checkIsNumber = (e) => {
   console.log(e.target.value);
@@ -20,13 +18,19 @@ const checkIsNumber = (e) => {
 };
 
 const Home = () => {
-  console.log(extractDate('2021-12-01'));
+  const navigate = useNavigate();
+  // console.log(extractDate('2021-12-01'));
   const dateRef = useRef();
   const stockRef = useRef();
   const investOptionRef = useRef();
   const investValueRef = useRef();
   const intervalInvestmentRef = useRef();
   const intervalDateRef = useRef();
+
+  useEffect(() => {
+    // 최소 조회 간격 설정
+    dateRef.current.max = dateDiff(4);
+  }, []);
 
   // 복리 옵션을 선택시 복리 선택창을 나타나게 한다.
   const checkIsCompound = (e) => {
@@ -58,11 +62,11 @@ const Home = () => {
     const date = dateRef.current.value;
     const stock = stockRef.current.value;
     const investOption = investOptionRef.current.value;
-    const investValue = investValueRef.current.value;
+    const investValue = Number(investValueRef.current.value);
 
     // Compound Option (복리 투자를 선택할 경우 추가 옵션)
     if (investOption === 'compound') {
-      intervalInvest = intervalInvestmentRef.current.value;
+      intervalInvest = Number(intervalInvestmentRef.current.value);
       switch(intervalDateRef.current.value){
         case "day":
           intervalDate = 1;
@@ -97,39 +101,29 @@ const Home = () => {
     console.log(e);
   };
 
-  const navigate = useNavigate();
-  const onSearch = () => {
-    const date = 'days';
-    const stock = 'KRW-BTC';
-    navigate('/result', {
-      state: {
-        upbitOption: {
-          date,
-          stock,
-        },
-      },
-    });
-  };
+
+
 
   return (
     <div>
       <h1>Hello World!</h1>
       <input
+        required
         ref={dateRef}
-        min='2021-11-10'
         type='date'
         onChange={onDateChange}
       />
       <input
+        required
         ref={investValueRef}
         onKeyDown={checkIsNumber}
         type='text'
         placeholder='InvestValue'
       />
       <select ref={stockRef}>
-        <option value='BTC-KRW'>BTC</option>
-        <option value='ETH-KRW'>ETH</option>
-        <option value='XRP-KRW'>XRP</option>
+        <option value='KRW-BTC'>BTC</option>
+        <option value='KRW-ETH'>ETH</option>
+        <option value='KRW-XRP'>XRP</option>
       </select>
       <select onChange={checkIsCompound} ref={investOptionRef}>
         <option value='compound'>compound(복리)</option>
@@ -142,6 +136,7 @@ const Home = () => {
       </select>
       {/* 복리 선택시 나타나는 input */}
       <input
+      required
         type='text'
         onKeyDown={checkIsNumber}
         ref={intervalInvestmentRef}

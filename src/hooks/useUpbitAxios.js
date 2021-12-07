@@ -13,8 +13,10 @@ const manager = new InvestManager();
 
 const factoringForCanvasData = (upbitData, options) => {
   const canvasDatas = {};
-  // date 겹침 -> investDate로 투자한 날짜 변경
 
+  // date 겹침 -> investDate로 투자한 날짜 변경
+  
+  const canvasData = manager.createCanvasData(upbitData, options);
   upbitData.forEach((item, idx) => {
     const date = item.candle_date_time_utc.substr(2, 8);
     const price = item.trade_price;
@@ -26,11 +28,12 @@ const factoringForCanvasData = (upbitData, options) => {
       // earning ratio (수익률)
     };
   });
+  
 
   // 데이터 가공 -> simple / compound option 정보 가공 수행
-
+  console.log(canvasData);
   // canvas에게 그리는 데이터 전달.
-  return canvasDatas;
+  return canvasData;
 };
 
 // function name: useUpbitAxios
@@ -42,16 +45,20 @@ const factoringForCanvasData = (upbitData, options) => {
 //           output: data: Response, isloading: Boolean, trigger: Function
 //     writing date: 2021/11/11
 //           writer: 강대렬
-const invManager = new InvestManager();
 
 const useUpbitAxios = (option, upbitOption) => {
   // 받은 upbitOption으로 요청할 url 생성
+  // const today = new Date();
+  // const DayFormatForUpbitParam = today.toISOString().substr(0, 11) + "00:00:00Z";
+  
   const [trigger, setTrigger] = useState(null);
   const [state, setState] = useState({
     data: null,
     isLoading: true,
   });
-  const url = `https://api.upbit.com/v1/candles/${upbitOption.date}?market=${upbitOption.stock}&count=200`;
+
+  // url은 항상 오늘 날짜 기준으로 모든 값을 구해야 한다.
+  const url = `https://api.upbit.com/v1/candles/days?market=${upbitOption.stock}&count=200`;
 
   const reAxios = () => {
     setState({
@@ -83,7 +90,7 @@ const useUpbitAxios = (option, upbitOption) => {
           newSearchDateOption = `${data[199].candle_date_time_utc}Z`;
           const newOption = {
             ...option,
-            url: `https://api.upbit.com/v1/candles/${upbitOption.date}?market=${upbitOption.stock}&to=${newSearchDateOption}&count=200`,
+            url: `https://api.upbit.com/v1/candles/days?market=${upbitOption.stock}&to=${newSearchDateOption}&count=200`,
           };
           axios(newOption)
             .then((response) => {

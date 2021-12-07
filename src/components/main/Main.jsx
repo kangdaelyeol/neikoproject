@@ -21,36 +21,60 @@ const Main = () => {
   const upbitOption = location.state?.upbitOption ?? false;
   
   const { data, isLoading, reAxios } = useUpbitAxios(options, upbitOption);
-  const [index, setIndex] = useState(1);
+  const [indexOption, setIndex] = useState({
+    index: 1,
+    interval: 1
+  });
   useEffect(() => {
     if (!upbitOption) {
       navigate('/');
     }
   });
   const shiftLeft = () => {
-    console.log('shift Left', index);
-    setIndex(index + 1);
+    if(indexOption.index + 5 > Object.keys(data).length) return true;
+    setIndex({
+      ...indexOption,
+    index: indexOption.index + 1
+  });
   };
 
   const shiftRight = () => {
-    if (index <= 1) return true;
-    setIndex(index - 1);
+    if (indexOption.index <= 1) return true;
+    setIndex({
+      ...indexOption,
+      index: indexOption.index - 1
+    });
   };
+
+  const onDateIntervalSet = (e) => {
+    if(e.target.nodeName !== "BUTTON") return;
+    const interval = Number(e.target.value);
+    setIndex({
+      ...indexOption,
+      interval
+    });
+  }
 
   return (
     <div>
+      <h1 className="title">result for {upbitOption.stock}</h1>
       {isLoading ? (
         <Loading />
       ) : (
         <Chart
           canvasData={data}
-          index={index}
+          indexOption={indexOption}
           shiftLeft={shiftLeft}
           shiftRight={shiftRight}
         />
       )}
       {/* <h1>{`${data}`}</h1> */}
       <button onClick={() => reAxios()}>reAxios</button>
+      <div onClick={onDateIntervalSet} className="selectButton">
+        <button value="1">1일 간격</button>
+        <button value="7">7일 간격</button>
+        <button value="30">30일 간격</button>
+      </div>
     </div>
   );
 };

@@ -53,6 +53,7 @@ class canvasService {
   // main canvas init aciton
   // data - upbitData(5), option: single / compound interest
   drawCanvas = (index, option) => {
+    console.log(index);
     // 데이터 인덱스 추출
     // console.log(this.fetchData);
     const drawData = [];
@@ -92,7 +93,6 @@ class canvasService {
   };
 
   checkIndex = (x, y) => {
-    console.log(this.elements);
     this.elements.forEach((e) => {
       if (this.ctx.isPointInPath(e.element, x, y)) {
         this.ctx.save();
@@ -256,7 +256,6 @@ class canvasService {
   };
 
   drawElementLine = () => {
-    console.log("drawelementLine");
     const lineUpRate = [];
     for (let i = 0; i < 4; i++) {
       const upRate = {};
@@ -287,20 +286,29 @@ class canvasService {
 }
 // end define Class
 
-// 값을 받아 해당 최대 자리수 까지 올림 내림 하는 기능
-const ceilNumber = (num) => {
-  const numlength = String(num).length - 1;
-  const divisionNumber = Math.pow(10, numlength);
+// 값을 받아 해당 최대 자리 반자리수 까지 올림 내림 하는 기능
+const ceilNumber = (input) => {
+  // 여백을 위해 1% 값 보정
+  const num = input + Math.round(input / 100);
+  const numLength = String(num).length;
+  const divCount = Math.floor(numLength / 2);
+  const mulCount = Math.ceil(numLength / 2);
+  const divisionNumber = Math.pow(10, divCount);
+  const mulNumber = Math.pow(10, mulCount);
   const maxNumberPosition = Math.ceil(num / divisionNumber);
-  const result = maxNumberPosition * divisionNumber;
+  const result = maxNumberPosition * mulNumber;
   return result;
 };
 
-const floorNumber = (num) => {
-  const numlength = String(num).length - 1;
-  const divisionNumber = Math.pow(10, numlength);
-  const maxNumberPosition = Math.floor(num / divisionNumber);
-  const result = maxNumberPosition * divisionNumber;
+const floorNumber = (input) => {
+  const num = input - Math.round(input / 100);
+  const numLength = String(num).length;
+  const divCount = Math.floor(numLength / 2);
+  const mulCount = Math.ceil(numLength / 2);
+  const divisionNumber = Math.pow(10, divCount);
+  const mulNumber = Math.pow(10, mulCount);
+  const minNumberPosition = Math.floor(num / divisionNumber);
+  const result = minNumberPosition * mulNumber;
   return result;
 };
 
