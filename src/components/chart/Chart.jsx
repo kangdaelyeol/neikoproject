@@ -10,26 +10,30 @@ const Chart = ({canvasData, indexOption, shiftLeft, shiftRight, showDetail}) => 
   const leftBtnRef = useRef();
   const rightBtnRef = useRef();
 
+  const setButtonDisabled = () => {
+    leftBtnRef.current.disabled = true;
+    rightBtnRef.current.disabled = true;
+    setTimeout( () => {
+      
+      leftBtnRef.current.disabled =
+      rightBtnRef.current.disabled = false;
+    }, BUTTON_DISABLED_TIMER);
+  }
+
   const onLeftClick = (e) => {
     const isDisAbled = shiftLeft();
     if(isDisAbled) return;
 
     shiftLeft();
-    e.target.disabled = true;
+    setButtonDisabled();
     // await for linear ctx .25s
-    setTimeout( () => {
-      e.target.disabled = false;
-    }, BUTTON_DISABLED_TIMER);
   }
 
   const onRightClick = (e) => {
     const isDisAbled = shiftRight();
     if(isDisAbled) return;
 
-    e.target.disabled = true;
-    setTimeout( () => {
-      e.target.disabled = false;
-    }, BUTTON_DISABLED_TIMER);
+    setButtonDisabled();
   }
 
 
@@ -71,14 +75,16 @@ const Chart = ({canvasData, indexOption, shiftLeft, shiftRight, showDetail}) => 
 
   return (
     <div className={styles.main}>
-      <button className={styles.button} ref={leftBtnRef}>left</button>
       <canvas
         className={styles.chart}
         width='940'
         height='550'
         ref={chartRef}
       ></canvas>
-      <button className={styles.button} ref={rightBtnRef}>right</button>
+      <div className={styles.buttonBox}>
+        <button className={styles.button} ref={leftBtnRef}>left</button>
+        <button className={styles.button} ref={rightBtnRef}>right</button>
+      </div>
     </div>
   );
 };

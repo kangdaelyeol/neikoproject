@@ -74,7 +74,7 @@ class canvasService {
     this.drawTickLines();
 
     // 요소 그리기
-    this.drawElements(ticks, drawData, this.elements);
+    this.drawElements(ticks, drawData);
 
     //날짜 그리기
     this.drawDate(drawData);
@@ -288,6 +288,7 @@ class canvasService {
             strokeStyle: `#${colorR}${colorG}${colorB}`,
             lineWidth: 1.5,
           });
+          this.checkIndex(1, 1);
         }, i * 1 + j * 50);
       }
     }
@@ -301,11 +302,9 @@ const ceilNumber = (input) => {
   const num = input + Math.round(input / 100);
   const numLength = String(num).length;
   const divCount = Math.floor(numLength / 2);
-  const mulCount = Math.ceil(numLength / 2);
   const divisionNumber = Math.pow(10, divCount);
-  const mulNumber = Math.pow(10, mulCount);
   const maxNumberPosition = Math.ceil(num / divisionNumber);
-  const result = maxNumberPosition * mulNumber;
+  const result = maxNumberPosition * divisionNumber;
   return result;
 };
 
@@ -313,11 +312,9 @@ const floorNumber = (input) => {
   const num = input - Math.round(input / 100);
   const numLength = String(num).length;
   const divCount = Math.floor(numLength / 2);
-  const mulCount = Math.ceil(numLength / 2);
   const divisionNumber = Math.pow(10, divCount);
-  const mulNumber = Math.pow(10, mulCount);
   const minNumberPosition = Math.floor(num / divisionNumber);
-  const result = minNumberPosition * mulNumber;
+  const result = minNumberPosition * divisionNumber;
   return result;
 };
 
