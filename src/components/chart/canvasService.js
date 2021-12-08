@@ -3,20 +3,20 @@ import drawServices from './drawService';
 const ELEMENT_RADIUS = 10;
 
 const CHART = Object.freeze({
-  fillX: 120,
-  fillY: 100,
-  fillWidth: 800,
+  fillX: 50,
+  fillY: 50,
+  fillWidth: 850,
   fillHeight: 450,
   x: 130,
   y: 110,
   width: 780,
   height: 430,
 });
-const CANVAS_WIDTH = 1000;
-const CANVAS_HEIGHT = 600;
+const CANVAS_WIDTH = 940;
+const CANVAS_HEIGHT = 550;
 
 class canvasService {
-  constructor(canvas, fetchData, DOM) {
+  constructor(canvas, fetchData) {
     this.ctx = canvas.getContext('2d');
     this.drawServices = new drawServices(this.ctx);
     // console.log(fetchData);
@@ -25,9 +25,7 @@ class canvasService {
     this.canvas = canvas;
     this.elementRadius = 10;
     this.Dev_LineConstruction();
-    this.addClickListener((e) => {
-      this.checkIndex(e.offsetX, e.offsetY);
-    });
+    this.currentElementData = null;
   }
 
   addMousemoveListener = (func) => {
@@ -52,31 +50,36 @@ class canvasService {
 
   // main canvas init aciton
   // data - upbitData(5), option: single / compound interest
-  drawCanvas = (indexOption, option) => {
+  drawCanvas = (indexOption) => {
     const { index, interval } = indexOption;
-
+    
     // 데이터 인덱스 추출
     const drawData = [];
     let ticks = null;
     for (let i = index; i < index + 5; i++) {
       drawData.push(this.fetchData[i * interval]);
     }
-    // console.log(drawData);
     drawData.reverse();
-
+    console.log(this.fetchData);
+    console.log(drawData);
+    
+    this.currentElementData = [...drawData];
+    
+    ticks = extractTickValue(drawData);
+    
+    // 가격 간격 그리기
+    this.drawTickValues(ticks, this.ctx);
+    
+    // 가격 선 그리기
     this.drawTickLines();
 
-    switch (option) {
-      case 'single':
-        ticks = extractTickValue(drawData);
-        this.drawTickValues(ticks, this.ctx);
-        this.drawElements(ticks, drawData, this.elements);
-        break;
-      default:
-        throw new Error('drawCanvas option type error');
-    }
+    // 요소 그리기
+    this.drawElements(ticks, drawData, this.elements);
 
+    //날짜 그리기
     this.drawDate(drawData);
+
+    // 요소 선 연결하는거 그리기
     this.drawElementLine();
   };
 
@@ -93,8 +96,11 @@ class canvasService {
   };
 
   checkIndex = (x, y) => {
-    this.elements.forEach((e) => {
+    let index = 9999;
+    console.log(x, y);
+    this.elements.forEach((e, idx) => {
       if (this.ctx.isPointInPath(e.element, x, y)) {
+        index = idx;
         this.ctx.save();
         setTimeout(() => {
           this.ctx.save();
@@ -109,18 +115,21 @@ class canvasService {
       }
     });
     this.ctx.restore();
+    return index;
   };
 
   drawDate = (drawData) => {
     const revisedFillWidth = CHART.fillWidth - this.elementRadius * 2;
     const revisedFillX = CHART.fillX + this.elementRadius;
     const drawIntervalX = revisedFillWidth / 4;
+    // 가격 텍스트와 겹침
+    const TEXT_PADDING = 12;
 
     drawData.forEach((e, idx) => {
       // option - x, y, textAlign, fontSize, fontFamily, text : Object
       this.drawServices.drawText({
         x: revisedFillX + drawIntervalX * idx,
-        y: CHART.fillY + CHART.fillHeight,
+        y: CHART.fillY + CHART.fillHeight + TEXT_PADDING,
         textAlign: 'center',
         fontSize: '12px',
         text: e.date,
@@ -264,10 +273,10 @@ class canvasService {
       upRate.y = -(this.elements[i].y - this.elements[i + 1].y) / 50;
       lineUpRate[i] = upRate;
     }
-    for(let j = 0; j<4; j++){
+    for (let j = 0; j < 4; j++) {
       // console.log(`draw`, this.elements[j]);
       for (let i = 0; i < 50; i++) {
-        const colorR = (((i * 1) + (j * 50)) % 256).toString(16);
+        const colorR = ((i * 1 + j * 50) % 256).toString(16);
         const colorG = (100).toString(16);
         const colorB = (220).toString(16);
         setTimeout(() => {
@@ -279,7 +288,7 @@ class canvasService {
             strokeStyle: `#${colorR}${colorG}${colorB}`,
             lineWidth: 1.5,
           });
-        }, (i * 1) + (j * 50));
+        }, i * 1 + j * 50);
       }
     }
   };

@@ -1,7 +1,5 @@
 // simple / compound interest calculate logic
 
-import { MakeDataObj } from '../components/chart/MakeDataObj';
-
 // function    name: howMuchMyMoney
 // function explain: 투자 금액과 투자 했을 당시 stockValue와 현재 stockValue를 받아
 //                   현재 자신의 투자 금액과 수익률을 반환한다.
@@ -23,22 +21,17 @@ export const howMuchMyMoney = (
 };
 
 //객체생성 { 날짜, 총 투자금액, 현재 자산 가치, 현재평단가,코인갯수,수익률 }
-function makeDataObj(
-  date,
-  totalInvestment,
-  nowInvest,
-  averagePrice,
-  coinCount,
-  y,
-) {
-  this.date = date;
-  this.totalInvestment = totalInvestment;
-  this.nowInvest = nowInvest;
-  this.coinCount = coinCount;
-  this.averagePrice = averagePrice;
-  this.y = y;
+class makeDataObj {
+  constructor(date, totalInvestment, nowInvest, averagePrice, coinCount, y, stockPrice) {
+    this.date = date;
+    this.totalInvestment = totalInvestment;
+    this.nowInvest = nowInvest;
+    this.coinCount = coinCount;
+    this.averagePrice = averagePrice;
+    this.y = y;
+    this.stockPrice = stockPrice;
+  }
 }
-
 // function    name: compoundInterest
 // function explain: 초기 투자 금액과, 투자 간격과 투자 할 때마다 정기적인 투자금 값을 받아
 //                   모든 투자 간격마다 수익을 내었는지 판단하고 투자 금액과 수익률을 소수점 2자리까지 반환한다.
@@ -108,6 +101,7 @@ export const compoundInterest = (
     priceAverage,
     coinCount,
     y,
+    coinObject[btDay].price
   );
   resultData.push(dataObj);
   for (let i = btDay - 1; i > 0; i--) {
@@ -116,7 +110,7 @@ export const compoundInterest = (
       priceXcount += daySellCoins * coinObject[i].price;
       coinCount += daySellCoins;
       totalInvestment += investDate;
-      priceAverage = priceXcount / coinCount;
+      priceAverage = Math.round(priceXcount / coinCount);
     }
     nowProfit = Math.round(
       priceAverage * coinCount +
@@ -130,15 +124,16 @@ export const compoundInterest = (
       priceAverage,
       coinCount,
       y,
+      coinObject[i].price
     );
     resultData.push(dataObj);
   }
-  if (btDay % intervalInvestment !== 0) {
+  if (btDay !== 1 && btDay % intervalInvestment !== 0) {
     daySellCoins = investDate / coinObject[1].price;
     priceXcount += daySellCoins * coinObject[1].price;
     coinCount += daySellCoins;
     totalInvestment += investDate;
-    priceAverage = priceXcount / coinCount;
+    priceAverage = Math.round(priceXcount / coinCount);
     nowProfit = Math.round(
       priceAverage * coinCount +
         (coinObject[1].price - priceAverage) * coinCount,
@@ -151,14 +146,14 @@ export const compoundInterest = (
       priceAverage,
       coinCount,
       y,
+      coinObject[1].price
     );
     resultData.push(dataObj);
   }
 
-  console.log('평단, 수익', priceAverage, nowProfit);
+  // console.log('평단, 수익', priceAverage, nowProfit);
   //수익,평단,현재평가금액,투자금액,코인갯수,총투자금액,수익률
-  const result = resultData;
-  return result;
+  return resultData;
 };
 
 export const dateDiff = (num) => {

@@ -52,6 +52,7 @@ const singleInvest = (data, option) => {
     myPrice, // 내 자산 가치
     earningsRate, // 수익률
     avgUnitPrice // 평균 단가
+    totalInvest // 나의 총 투자 금액
     */
   };
 
@@ -75,6 +76,7 @@ const singleInvest = (data, option) => {
       earningsRate,
       // 평균 단가는 변하지 않는다.
       avgUnitPrice: beforeStockValue,
+      totalInvest: option.investValue
     };
   });
   console.log(investData);
@@ -99,8 +101,22 @@ const compoundInvest = (data, option) => {
     option.intervalInvest,
     data,
     option.date,
-  );
-  console.log(result);
+  ).reverse();
+  // console.log(result);
+  result.forEach((item, idx) => {
+    const id = idx + 1;
+    investData[id] = {
+      id,
+      date: item.date,
+      price: item.nowInvest,
+      earningsRate: item.y,
+      avgUnitPrice: item.averagePrice,
+      stockPrice: item.stockPrice,
+      totalInvest: item.totalInvestment
+    };
+  });
+  // console.log(investData);
+  return investData;
 };
 
 export const extractDate = (date) => {
