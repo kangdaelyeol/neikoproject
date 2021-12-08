@@ -13,9 +13,58 @@
   width:100vw;
   display: flex;
   justify-content: center;
+  align-items: center;
   flex-direction: column;
 }
 
-.abd{
-  display: none;
+.main__chart{
+  width:100%;
+  height: 450px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.main__option{
+  display: flex;
+  width: 800px;
+  justify-content: center;
+  flex-direction: column;
+}
+
+
+
+
+.button{
+  all:unset;
+  cursor: pointer;
+  font-size: .7rem;
+  color:gray;
+  border: 1px solid gray;
+  border-radius: 2px;
+  flex-grow: 1;
+  text-align: center;
+  user-select: none;
+}
+
+.button:hover{
+  background-color: #192227 ;
+  color:whitesmoke;
+}
+
+.intervalTitle{
+  font-size: 1.3rem;
+  color:gray;
+}
+
+.buttonFrg{
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.top{
+  position: relative;
+  width: 800px;
 }

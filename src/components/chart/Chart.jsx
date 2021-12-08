@@ -4,7 +4,7 @@ import canvasService from './canvasService';
 
 const BUTTON_DISABLED_TIMER = 300;
 
-const Chart = ({canvasData, indexOption, shiftLeft, shiftRight, showDetail}) => {
+const Chart = ({canvasData, indexOption, shiftLeft, shiftRight, showDetail, isDetail}) => {
   const chartRef = useRef();
   // button reference
   const leftBtnRef = useRef();
@@ -74,16 +74,16 @@ const Chart = ({canvasData, indexOption, shiftLeft, shiftRight, showDetail}) => 
   }, [indexOption]);
 
   return (
-    <div className={styles.main}>
+    <div className={`${styles.main} ${isDetail.active ? styles.moveLeft : ""}`}>
       <canvas
         className={styles.chart}
-        width='940'
-        height='550'
+        width='800'
+        height='450'
         ref={chartRef}
       ></canvas>
       <div className={styles.buttonBox}>
-        <button className={styles.button} ref={leftBtnRef}>left</button>
-        <button className={styles.button} ref={rightBtnRef}>right</button>
+        <button className={`${styles.button} ${styles.leftBtn}`} ref={leftBtnRef}>left</button>
+        <button className={`${styles.button} ${styles.rightBtn}`} ref={rightBtnRef}>right</button>
       </div>
     </div>
   );

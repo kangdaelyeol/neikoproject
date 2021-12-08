@@ -5,15 +5,15 @@ const ELEMENT_RADIUS = 10;
 const CHART = Object.freeze({
   fillX: 50,
   fillY: 50,
-  fillWidth: 850,
-  fillHeight: 450,
+  fillWidth: 710,
+  fillHeight: 350,
   x: 130,
   y: 110,
   width: 780,
   height: 430,
 });
-const CANVAS_WIDTH = 940;
-const CANVAS_HEIGHT = 550;
+const CANVAS_WIDTH = 800;
+const CANVAS_HEIGHT = 450;
 
 class canvasService {
   constructor(canvas, fetchData) {
@@ -24,7 +24,7 @@ class canvasService {
     this.fetchData = fetchData;
     this.canvas = canvas;
     this.elementRadius = 10;
-    this.Dev_LineConstruction();
+    // this.Dev_LineConstruction();
     this.currentElementData = null;
   }
 
@@ -97,7 +97,6 @@ class canvasService {
 
   checkIndex = (x, y) => {
     let index = 9999;
-    console.log(x, y);
     this.elements.forEach((e, idx) => {
       if (this.ctx.isPointInPath(e.element, x, y)) {
         index = idx;
@@ -110,7 +109,7 @@ class canvasService {
         this.ctx.fillStyle = 'blue';
         this.ctx.fill(e.element);
       } else {
-        this.ctx.fillStyle = '#9D9E9F';
+        this.ctx.fillStyle = '#606060';
         this.ctx.fill(e.element);
       }
     });
@@ -131,7 +130,7 @@ class canvasService {
         x: revisedFillX + drawIntervalX * idx,
         y: CHART.fillY + CHART.fillHeight + TEXT_PADDING,
         textAlign: 'center',
-        fontSize: '12px',
+        fontSize: '10px',
         text: e.date,
         fontFamily: 'serif',
         baseLine: 'hanging',
@@ -171,7 +170,7 @@ class canvasService {
           x: p.x,
           y: p.y,
           radius: this.elementRadius,
-          color: '9D9E9F',
+          color: '#202020',
         },
         this.elements,
       );
@@ -181,7 +180,7 @@ class canvasService {
         x: p.x,
         y: p.y + ELEMENT_RADIUS * 2,
         textAlign: 'center',
-        fontSize: '12px',
+        fontSize: '10px',
         fontFamily: 'serif',
         text: p.price,
       });
@@ -196,7 +195,7 @@ class canvasService {
         x: CHART.fillX - textIntervalX,
         y: CHART.fillY + CHART.fillHeight - tickInterval * i + textIntervalY,
         fontFamily: 'serif',
-        fontSize: '10px',
+        fontSize: '9px',
         textAlign: 'right',
         text: ticks[i],
         baseLine: 'hanging',
@@ -216,7 +215,7 @@ class canvasService {
         lineX: CHART.fillX + CHART.fillWidth,
         lineY: CHART.fillY + tickInterval * i,
         lineWidth: 1,
-        strokeStyle: 'black',
+        strokeStyle: '#fafafa',
         dash,
       });
     }
@@ -276,16 +275,13 @@ class canvasService {
     for (let j = 0; j < 4; j++) {
       // console.log(`draw`, this.elements[j]);
       for (let i = 0; i < 50; i++) {
-        const colorR = ((i * 1 + j * 50) % 256).toString(16);
-        const colorG = (100).toString(16);
-        const colorB = (220).toString(16);
         setTimeout(() => {
           this.drawServices.drawLine({
             moveX: this.elements[j].x + lineUpRate[j].x * i,
             moveY: this.elements[j].y + lineUpRate[j].y * i,
             lineX: this.elements[j].x + lineUpRate[j].x * (i + 1),
             lineY: this.elements[j].y + lineUpRate[j].y * (i + 1),
-            strokeStyle: `#${colorR}${colorG}${colorB}`,
+            strokeStyle: `#fafafa`,
             lineWidth: 1.5,
           });
           this.checkIndex(1, 1);
@@ -352,8 +348,5 @@ const extractTickValue = (drawData) => {
   return newTicks;
 };
 
-const checkIndexElement = (x, y, elements) => {
-  return;
-};
 
 export default canvasService;

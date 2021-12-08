@@ -62,23 +62,25 @@ const Home = () => {
     const date = dateRef.current.value;
     const stock = stockRef.current.value;
     const investOption = investOptionRef.current.value;
-    const investValue = Number(investValueRef.current.value);
+    const investValue = Math.ceil(Number(investValueRef.current.value));
+    if (date === '' || investValue <= 0 || stock <= 0) return;
 
     // Compound Option (복리 투자를 선택할 경우 추가 옵션)
     if (investOption === 'compound') {
-      intervalInvest = Number(intervalInvestmentRef.current.value);
-      switch(intervalDateRef.current.value){
-        case "day":
+      intervalInvest = Math.ceil(Number(intervalInvestmentRef.current.value));
+      if (intervalInvest < 0) return;
+      switch (intervalDateRef.current.value) {
+        case 'day':
           intervalDate = 1;
           break;
-        case "week":
+        case 'week':
           intervalDate = 7;
           break;
-        case "month": 
+        case 'month':
           intervalDate = 30;
           break;
         default:
-          throw new Error("W T F type of Date error!");
+          throw new Error('W T F type of Date error!');
       }
     }
     const upbitOption = {
@@ -89,6 +91,7 @@ const Home = () => {
       intervalInvest, // int - 복리 투자 금액
       intervalDate, // int - 투자 간격
     };
+    console.log(upbitOption);
 
     navigate('/result', {
       state: {
@@ -101,48 +104,64 @@ const Home = () => {
     console.log(e);
   };
 
-
-
-
   return (
-    <div>
-      <h1>Hello World!</h1>
-      <input
-        required
-        ref={dateRef}
-        type='date'
-        onChange={onDateChange}
-      />
-      <input
-        required
-        ref={investValueRef}
-        onKeyDown={checkIsNumber}
-        type='text'
-        placeholder='InvestValue'
-      />
-      <select ref={stockRef}>
-        <option value='KRW-BTC'>BTC</option>
-        <option value='KRW-ETH'>ETH</option>
-        <option value='KRW-XRP'>XRP</option>
-      </select>
-      <select onChange={checkIsCompound} ref={investOptionRef}>
-        <option value='compound'>compound(복리)</option>
-        <option value='single'>simple(단리)</option>
-      </select>
-      <select ref={intervalDateRef}>
-        <option value='day'>매일 마다</option>
-        <option value='week'>매주 마다(7)</option>
-        <option value='year'>매달 마다(30)</option>
-      </select>
-      {/* 복리 선택시 나타나는 input */}
-      <input
-      required
-        type='text'
-        onKeyDown={checkIsNumber}
-        ref={intervalInvestmentRef}
-        placeholder='HOW MUCH COMPOUND?'
-      />
-      <button onClick={onSimulate}>go to search</button>
+    <div className={styles.main}>
+      <h1 className={styles.title}>Hello World!</h1>
+      <form className={styles.form}>
+        <div className={styles.form__line}>
+          <span>투자 날짜 - </span>
+          <input required ref={dateRef} className={styles.input} type='date' onChange={onDateChange} />
+        </div>
+        <div className={styles.form__line}>
+          <span>투자 금액 - </span>
+          <input
+            required
+            ref={investValueRef}
+            onKeyDown={checkIsNumber}
+            type='text'
+            placeholder='InvestValue'
+            className={styles.input}
+          />
+        </div>
+        <div className={styles.form__line}>
+          <span>코인 종류 - </span>
+          <select ref={stockRef} className={styles.input}>
+            <option value='KRW-BTC'>BTC</option>
+            <option value='KRW-ETH'>ETH</option>
+            <option value='KRW-XRP'>XRP</option>
+          </select>
+        </div>
+        <div className={styles.form__line}>
+          <span>투자 옵션 - </span>
+          <select onChange={checkIsCompound} className={styles.input} ref={investOptionRef}>
+            <option value='compound'>compound(복리)</option>
+            <option value='single'>simple(단리)</option>
+          </select>
+        </div>
+        <div className={styles.form__line}>
+          <span>복리 투자 간격 - </span>
+          <select ref={intervalDateRef} className={styles.input}>
+            <option value='day'>매일 마다</option>
+            <option value='week'>매주 마다(7)</option>
+            <option value='year'>매달 마다(30)</option>
+          </select>
+        </div>
+        {/* 복리 선택시 나타나는 input */}
+        <div className={styles.form__line}>
+          <span>복리 투자 금액 - </span>
+          <input
+          className={styles.input}
+            required
+            type='text'
+            onKeyDown={checkIsNumber}
+            ref={intervalInvestmentRef}
+            placeholder='HOW MUCH COMPOUND?'
+          />
+        </div>
+        <button className={styles.button} onClick={onSimulate}>
+          START!
+        </button>
+      </form>
     </div>
   );
 };

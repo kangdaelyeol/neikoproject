@@ -89,7 +89,7 @@ export const compoundInterest = (
   );
 
   let y =
-    ((coinObject[btDay].price / priceAverage) * 100 - 100).toFixed(2) + '% ';
+    ((coinObject[btDay].price / priceAverage) * 100 - 100).toFixed(2);
   let resultData = [];
   let dataObj = {};
   //평단가: (코인1구매가격*코인1갯수)+(코인2구매가격*코인2갯수)/총 코인갯수
@@ -116,7 +116,7 @@ export const compoundInterest = (
       priceAverage * coinCount +
         (coinObject[i].price - priceAverage) * coinCount,
     );
-    y = ((coinObject[i].price / priceAverage) * 100 - 100).toFixed(2) + '% ';
+    y = ((coinObject[i].price / priceAverage) * 100 - 100).toFixed(2);
     dataObj = new makeDataObj(
       coinObject[i].date,
       totalInvestment,
@@ -138,7 +138,7 @@ export const compoundInterest = (
       priceAverage * coinCount +
         (coinObject[1].price - priceAverage) * coinCount,
     );
-    y = ((coinObject[1].price / priceAverage) * 100 - 100).toFixed(2) + '% ';
+    y = ((coinObject[1].price / priceAverage) * 100 - 100).toFixed(2);
     dataObj = new makeDataObj(
       coinObject[1].date,
       totalInvestment,

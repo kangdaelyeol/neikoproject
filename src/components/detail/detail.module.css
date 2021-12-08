@@ -1,0 +1,82 @@
+.detail{
+  width: 800px;
+  height: 450px;
+  display: flex;
+  justify-content: flex-end;
+  background-color: #606060;
+  z-index: 1;
+  position: absolute;
+  opacity: 0;
+  transition: all .2s ease-in;
+}
+
+.activeClose{
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color:thistle;
+  border-radius: 50%;
+  overflow: hidden;
+  text-indent: 999px;
+  cursor: pointer;
+  transition: all .1s linear;
+}
+
+.activeClose:hover{
+  background-color: tomato;
+}
+
+.moveRight {
+  transform: translateX(200px);
+  opacity: 1;
+}
+
+.contents{
+  width: 400px;
+  height: 100%;
+  padding: 10px;
+  background-color: 00081c;
+}
+
+.mainContents{
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  user-select: none;
+}
+
+.topContents{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 0;
+  user-select: none;
+}
+
+.title{
+  font-weight: bold;
+}
+
+.stockPrice{
+  font-weight: bold;
+  color:yellowgreen
+}
+
+.date{
+  font-size: 13px;
+  color:00081c
+}
+
+.content{
+  color:#aaaaaa;
+  font-size: 1.2rem;
+}
+.red{
+  color:red;
+}
+
+.blue{
+  color:blue;
+}

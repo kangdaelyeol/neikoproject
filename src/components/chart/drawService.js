@@ -16,7 +16,7 @@ class drawServices {
   drawText = (option) => {
     this.ctx.save();
     this.ctx.font = `${option.fontSize} ${option.fontFamily}`;
-    this.ctx.strokeStyle = 'black';
+    this.ctx.strokeStyle = '#fafafa';
     this.ctx.textAlign = option.textAlign;
     if (option.baseLine) this.ctx.textBaseline = option.baseLine;
     this.ctx.strokeText(option.text, option.x, option.y);

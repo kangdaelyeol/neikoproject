@@ -59,6 +59,8 @@ const singleInvest = (data, option) => {
   // 투자했을 당시 코인 금액 받기 -> 마지막 요소의 가격
   const beforeStockValue = data[Object.keys(data).length].price;
 
+  // 코인이 몇 개인지 계산하기
+  const coinCount = (option.investValue / beforeStockValue).toFixed(8);
   Object.keys(data).forEach((key) => {
     // key -> String 타입이기 때문에 정수로 바꿔줌.
     const idx = Number(key);
@@ -76,7 +78,8 @@ const singleInvest = (data, option) => {
       earningsRate,
       // 평균 단가는 변하지 않는다.
       avgUnitPrice: beforeStockValue,
-      totalInvest: option.investValue
+      totalInvest: option.investValue,
+      coinCount
     };
   });
   console.log(investData);
@@ -112,7 +115,8 @@ const compoundInvest = (data, option) => {
       earningsRate: item.y,
       avgUnitPrice: item.averagePrice,
       stockPrice: item.stockPrice,
-      totalInvest: item.totalInvestment
+      totalInvest: item.totalInvestment,
+      coinCount: item.coinCount.toFixed(8)
     };
   });
   // console.log(investData);

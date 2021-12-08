@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Chart from '../chart/Chart';
 import useUpbitAxios from '../../hooks/useUpbitAxios';
 import Loading from '../loading/Loading';
@@ -24,10 +24,24 @@ const Main = () => {
   const chartContainerRef = useRef();
 
   const { data, isLoading, reAxios } = useUpbitAxios(options, upbitOption);
+  const [isDetail, setDetail] = useState({
+    data: false,
+    active: false,
+  });
   const [indexOption, setIndex] = useState({
     index: 1,
     interval: 1,
   });
+  const closeDetail = () => {
+    setDetail({
+      ...isDetail,
+      active: false,
+    });
+  };
+
+  const onResearch = () => {
+    navigate("/");
+  }
   useEffect(() => {
     if (!upbitOption) {
       navigate('/');
@@ -37,13 +51,11 @@ const Main = () => {
   // detail component 반환
   const showDetail = (inform) => {
     console.log(inform);
-    // chart 왼쪽으로 옮기기
-    const chart = chartContainerRef.current;
-    console.dir(chart);
-    chart.classList.add(styles.abd);
-    console.log(chart.classList);
-    // Detail 오른쪽에 나타나게 하기
-    return <Detail inform={inform} />;
+    setDetail({
+      ...isDetail,
+      active: true,
+      data: inform,
+    });
   };
 
   // 왼쪽으로 옮기기
@@ -95,32 +107,50 @@ const Main = () => {
   };
   return (
     <div className={styles.main}>
-      <h1 className={styles.title}>result for {upbitOption.stock}</h1>
+      <div className={styles.top}>
+        <h1 className={styles.title}>result for {upbitOption.stock}</h1>
+      </div>
       <div className={styles.main__wrapper}>
-        <div className={styles.main__chart} ref={chartContainerRef}>
+        <div className={`${styles.main__chart}`} ref={chartContainerRef}>
           {isLoading ? (
             <Loading />
           ) : (
-            <Chart
-              canvasData={data}
-              indexOption={indexOption}
-              shiftLeft={shiftLeft}
-              shiftRight={shiftRight}
-              showDetail={showDetail}
-            />
+            <>
+              <Chart
+                canvasData={data}
+                indexOption={indexOption}
+                shiftLeft={shiftLeft}
+                shiftRight={shiftRight}
+                showDetail={showDetail}
+                isDetail={isDetail}
+              />
+              <Detail
+                data={isDetail.data}
+                isDetail={isDetail}
+                closeDetail={closeDetail}
+                stock={upbitOption.stock}
+              />
+            </>
           )}
         </div>
-        <div className={styles.main__detail}></div>
       </div>
       <div className={styles.main__option}>
-        <button onClick={() => reAxios()}>reAxios</button>
-        <div onClick={dateIntervalSet} className='selectButton'>
-          <button value='1'>1일 간격</button>
-          <button value='7'>7일 간격</button>
-          <button value='30'>30일 간격</button>
+        <div onClick={dateIntervalSet} className={styles.buttonFrg}>
+          <button className={styles.button} value='1'>
+            1day
+          </button>
+          <button className={styles.button} value='7'>
+            7days
+          </button>
+          <button className={styles.button} value='30'>
+            30days
+          </button>
         </div>
-        <input min='1' ref={dateIntervalRef} type='number' />
-        <button onClick={cDateIntervalSet}>일 간격</button>
+        <div className={styles.buttonFrg}>
+          <input min='1' ref={dateIntervalRef} type='number' />
+          <button onClick={cDateIntervalSet} className={styles.button}>days</button>
+        </div>
+        <button onClick={onResearch} className={styles.button}>다시 조회</button>
       </div>
     </div>
   );
