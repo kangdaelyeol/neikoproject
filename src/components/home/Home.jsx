@@ -143,7 +143,7 @@ const Home = () => {
           <select ref={intervalDateRef} className={styles.input}>
             <option value='day'>매일 마다</option>
             <option value='week'>매주 마다(7)</option>
-            <option value='year'>매달 마다(30)</option>
+            <option value='month'>매달 마다(30)</option>
           </select>
         </div>
         {/* 복리 선택시 나타나는 input */}
