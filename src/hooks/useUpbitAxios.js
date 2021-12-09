@@ -76,11 +76,8 @@ const useUpbitAxios = (option, upbitOption) => {
     let data = null;
     //Start Axios
     // setAllResult(null);
-
-    console.log('OUTSIDE AXIOS START');
     axios(option)
       .then((response) => {
-        console.log('INSIDE AXIOS START');
         data = response.data;
         result = [...data];
         let newSearchDateOption = null;
@@ -122,7 +119,6 @@ const useUpbitAxios = (option, upbitOption) => {
           console.log('if length === 200');
           return recursiveAxios();
         } else {
-          console.log('else length - 호출 ㄴㄴ');
           const factoringData = factoringForCanvasData([...result]);
           console.log(factoringData);
           setState({
@@ -131,7 +127,6 @@ const useUpbitAxios = (option, upbitOption) => {
             isLoading: false,
           });
         }
-        console.log('INSIDE AXIOS END');
       }) // end recursive logic, AXIOS
       .catch((e) => {
         console.log(e.message);

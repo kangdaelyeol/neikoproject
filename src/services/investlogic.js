@@ -64,7 +64,6 @@ export const compoundInterest = (
   //코인구매가격*코인갯수
   let priceXcount = 0;
   // 하루코인구매갯수 인데 처음 투자할때 값 먼저 넣어줬음
-  console.log(btDay);
   let daySellCoins = startInvestment / coinObject[btDay].price;
 
   coinCount += daySellCoins;
@@ -77,19 +76,8 @@ export const compoundInterest = (
     priceAverage * coinCount +
       (coinObject[btDay].price - priceAverage) * coinCount,
   );
-  console.log(
-    'daySellCoins',
-    daySellCoins,
-    'coinObject[btDay].price',
-    coinObject[btDay].price,
-    'priceXcount',
-    priceXcount,
-    'coinCount',
-    coinCount,
-  );
 
-  let y =
-    ((coinObject[btDay].price / priceAverage) * 100 - 100).toFixed(2);
+  let y = ((coinObject[btDay].price / priceAverage) * 100 - 100).toFixed(2);
   let resultData = [];
   let dataObj = {};
   //평단가: (코인1구매가격*코인1갯수)+(코인2구매가격*코인2갯수)/총 코인갯수

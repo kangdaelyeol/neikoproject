@@ -1,9 +1,11 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './home.module.css';
 import { dateDiff } from '../../services/investlogic';
+import searchMindateAxios from '../../hooks/useSearchMindateAxios';
 
 const checkIsNumber = (e) => {
+
   console.log(e.target.value);
   const key = e.key;
   let isNumber = false;
@@ -18,6 +20,7 @@ const checkIsNumber = (e) => {
 };
 
 const Home = () => {
+  const [minDate, setMindate] = useState(false);
   const navigate = useNavigate();
   // console.log(extractDate('2021-12-01'));
   const dateRef = useRef();
@@ -30,14 +33,16 @@ const Home = () => {
   useEffect(() => {
     // 최소 조회 간격 설정
     dateRef.current.max = dateDiff(4);
+    onOptionChange();
+    // 코인 minDate 설정
+    onStockChange();
   }, []);
 
   // 복리 옵션을 선택시 복리 선택창을 나타나게 한다.
-  const checkIsCompound = (e) => {
-    const investOption = e.target.value;
+  const onOptionChange = () => {
+    const investOption = investOptionRef.current.value;
     const compoundDOM = intervalInvestmentRef.current;
     const dateIntervalDOM = intervalDateRef.current;
-    console.log(compoundDOM);
     switch (investOption) {
       case 'single':
         compoundDOM.style.display = 'none';
@@ -51,6 +56,14 @@ const Home = () => {
         throw new Error('Whta fokin Type of investment option Error!');
     }
   };
+
+  const onStockChange = () => {
+    const stock = stockRef.current.value;
+    searchMindateAxios(stock).then(e => {
+      const date = e.data[e.data.length - 1].candle_date_time_utc.substr(0, 10);
+      setMindate(date);
+    })
+  }
 
   // 모든 input 정보를 모아 결과창으로 넘긴다.
   const onSimulate = (e) => {
@@ -100,9 +113,6 @@ const Home = () => {
     });
   };
 
-  const onDateChange = (e) => {
-    console.log(e);
-  };
 
   return (
     <div className={styles.main}>
@@ -110,7 +120,7 @@ const Home = () => {
       <form className={styles.form}>
         <div className={styles.form__line}>
           <span>투자 날짜 - </span>
-          <input required ref={dateRef} className={styles.input} type='date' onChange={onDateChange} />
+          <input required ref={dateRef} min={minDate ? minDate : ""} className={styles.input} type='date' />
         </div>
         <div className={styles.form__line}>
           <span>투자 금액 - </span>
@@ -125,17 +135,18 @@ const Home = () => {
         </div>
         <div className={styles.form__line}>
           <span>코인 종류 - </span>
-          <select ref={stockRef} className={styles.input}>
+          <select ref={stockRef} onChange={onStockChange} className={styles.input}>
             <option value='KRW-BTC'>BTC</option>
             <option value='KRW-ETH'>ETH</option>
             <option value='KRW-XRP'>XRP</option>
+            <option value='KRW-EOS'>EOS</option>
           </select>
         </div>
         <div className={styles.form__line}>
           <span>투자 옵션 - </span>
-          <select onChange={checkIsCompound} className={styles.input} ref={investOptionRef}>
-            <option value='compound'>compound(복리)</option>
+          <select onChange={onOptionChange} className={styles.input} ref={investOptionRef}>
             <option value='single'>simple(단리)</option>
+            <option value='compound'>compound(복리)</option>
           </select>
         </div>
         <div className={styles.form__line}>

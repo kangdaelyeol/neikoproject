@@ -82,7 +82,6 @@ const singleInvest = (data, option) => {
       coinCount
     };
   });
-  console.log(investData);
   return investData;
 };
 
