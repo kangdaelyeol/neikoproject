@@ -20,6 +20,7 @@ const Chart = ({canvasData, indexOption, shiftLeft, shiftRight, showDetail, isDe
     }, BUTTON_DISABLED_TIMER);
   }
 
+  // onIndexChange(left)
   const onLeftClick = (e) => {
     const isDisAbled = shiftLeft();
     if(isDisAbled) return;
@@ -29,6 +30,7 @@ const Chart = ({canvasData, indexOption, shiftLeft, shiftRight, showDetail, isDe
     // await for linear ctx .25s
   }
 
+  // onIndexChange(right)
   const onRightClick = (e) => {
     const isDisAbled = shiftRight();
     if(isDisAbled) return;

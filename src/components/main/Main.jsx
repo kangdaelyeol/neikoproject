@@ -60,6 +60,7 @@ const Main = () => {
 
   // 왼쪽으로 옮기기
   const shiftLeft = () => {
+    // index검사
     if (
       (indexOption.index + 5) * indexOption.interval >
       Object.keys(data).length
@@ -73,6 +74,7 @@ const Main = () => {
 
   // 오른쪽으로 옮기기
   const shiftRight = () => {
+    // index검사
     if (indexOption.index <= 1) return true;
     setIndex({
       ...indexOption,
