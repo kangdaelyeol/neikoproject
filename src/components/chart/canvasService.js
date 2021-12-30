@@ -331,7 +331,7 @@ const extractTickValue = (drawData) => {
   });
   let minprice = prices[0];
   let maxprice = prices[0];
-
+  // const abc = document.querySelector("#bva") as Element;
   // 최소 최댓값 구하기
   prices.forEach((price) => {
     if (price > maxprice) maxprice = price;
